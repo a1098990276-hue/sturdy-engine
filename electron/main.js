@@ -1,24 +1,34 @@
-// Main Electron file
-
 const { app, BrowserWindow } = require('electron');
+const path = require('path');
+
+let win;
 
 function createWindow() {
-    const win = new BrowserWindow({
-        width: 800,
-        height: 600,
-        webPreferences: {
-            preload: path.join(__dirname, 'preload.js'),
-        }
-    });
-    win.loadURL('http://localhost:3000');
+  win = new BrowserWindow({
+    width: 1200,
+    height: 800,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js')
+    }
+  });
+
+  win.loadURL('http://localhost:5173');
+
+  if (!app.isPackaged) {
+    win.webContents.openDevTools({ mode: 'detach' });
+  }
+
+  win.on('closed', () => {
+    win = null;
+  });
 }
 
 app.whenReady().then(createWindow);
 
 app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') app.quit();
+  if (process.platform !== 'darwin') app.quit();
 });
 
 app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  if (win === null) createWindow();
 });
