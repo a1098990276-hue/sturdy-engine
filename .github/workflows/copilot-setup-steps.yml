@@ -23,6 +23,5 @@ jobs:
           cache-dependency-path: "desktop-app/package-lock.json"
 
       - name: Install dependencies for desktop-app
-        run: |
-          cd desktop-app
-          npm ci
+        working-directory: desktop-app
+        run: npm ci
