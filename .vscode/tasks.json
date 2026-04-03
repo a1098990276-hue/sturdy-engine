@@ -1,0 +1,13 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "dev",
+			"path": "desktop-app",
+			"problemMatcher": [],
+			"label": "npm: dev - desktop-app",
+			"detail": "concurrently -k \"vite\" \"wait-on tcp:5173 && electron .\" \"node server/index.js\""
+		}
+	]
+}
