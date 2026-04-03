@@ -76,7 +76,7 @@ GitHub Packages supports `SNAPSHOT` versions of Apache Maven. To use the GitHub 
 By default, GitHub publishes the package to an existing repository with the same name as the package. For example, GitHub will publish a package named `com.example:test` in a repository called `OWNER/test`.
 
 > [!WARNING]
-> Your Apache Maven package must follow the naming convention, and therefore the `artifactId` field should only contain lowercase letters, digits, or hyphens. For more information, see [Naming convention of Maven coordinates](https://maven.apache.org/guides/mini/guide-naming-conventions.html) in the maven.apache.org documentation. If you use uppercase letters in the artifact name, you'll get a *422 Unprocessable Entity* response.
+> When publishing to GitHub Packages, your `artifactId` must only contain lowercase letters, digits, or hyphens. While standard Maven conventions allow uppercase letters, GitHub Packages requires lowercase for proper repository matching. If you use uppercase letters in the artifact name, you'll get a *422 Unprocessable Entity* response. For more information about Maven naming conventions, see [Naming convention of Maven coordinates](https://maven.apache.org/guides/mini/guide-naming-conventions.html) in the maven.apache.org documentation.
 
 If you would like to publish multiple packages to the same repository, you can include the URL of the repository in the `<distributionManagement>` element of the *pom.xml* file. GitHub will match the repository based on that field. Since the repository name is also part of the `distributionManagement` element, there are no additional steps to publish multiple packages to the same repository.
 
@@ -104,7 +104,7 @@ After you publish a package, you can view the package on GitHub. For more inform
 
 ## Installing a package
 
-To install an Apache Maven package from GitHub Packages, edit the *pom.xml* file to include the package as a dependency. If you want to install packages from any repository for a specified repository owner, use a repository URL like `https://maven.pkg.github.com/OWNER/*`. For more information on using a *pom.xml* file in your project, see [Introduction to the POM](https://maven.apache.org/guides/introduction/introduction-to-the-pom.html) in the Apache Maven documentation.
+To install an Apache Maven package from GitHub Packages, edit the *pom.xml* file to include the package as a dependency. If you want to install packages from any repository for a specified repository owner, use a repository URL like `https://maven.pkg.github.com/OWNER/*` in your *~/.m2/settings.xml* file. This wildcard pattern allows you to access all packages published by that owner. For more information on using a *pom.xml* file in your project, see [Introduction to the POM](https://maven.apache.org/guides/introduction/introduction-to-the-pom.html) in the Apache Maven documentation.
 
 1. Authenticate to GitHub Packages. For more information, see [Authenticating to GitHub Packages](#authenticating-to-github-packages).
 
