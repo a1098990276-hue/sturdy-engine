@@ -10,17 +10,26 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: desktop-app
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
+          cache-dependency-path: desktop-app/package-lock.json
       - run: npm ci
       - run: npm test
+      - run: npm run build
 
   publish-gpr:
     needs: build
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: desktop-app
     permissions:
       contents: read
       packages: write
@@ -30,6 +39,8 @@ jobs:
         with:
           node-version: 20
           registry-url: https://npm.pkg.github.com/
+          cache: 'npm'
+          cache-dependency-path: desktop-app/package-lock.json
       - run: npm ci
       - run: npm publish
         env:
