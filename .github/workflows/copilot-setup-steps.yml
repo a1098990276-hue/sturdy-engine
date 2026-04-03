@@ -6,6 +6,9 @@ name: "Copilot Setup Steps"
 
 on: copilot_setup_steps
 
+permissions:
+  contents: read
+
 jobs:
   setup:
     runs-on: ubuntu-latest
