@@ -54,7 +54,7 @@ jobs:
 
   publish-npm:
     needs: build
-    if: github.event_name == 'workflow_dispatch' && github.event.inputs.publish_to_npm == 'true'
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.publish_to_npm == true
     runs-on: ubuntu-latest
     permissions:
       contents: read
