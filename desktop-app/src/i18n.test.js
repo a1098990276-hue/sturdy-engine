@@ -64,8 +64,13 @@ describe('i18n Translations', () => {
     it('should have Arabic RTL content indicators', () => {
       // Arabic text should contain Arabic characters (Unicode range)
       const arabicRegex = /[\u0600-\u06FF]/;
+      const allowedNonArabicKeys = ['developerName', 'github', 'licenseType', 'technologies'];
       
       Object.entries(arTranslations).forEach(([key, value]) => {
+        if (allowedNonArabicKeys.includes(key)) {
+          return;
+        }
+
         expect(arabicRegex.test(value), `'${key}' should contain Arabic characters`).toBe(true);
       });
     });
