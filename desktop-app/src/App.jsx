@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { getModuleById, navigationItems, utilityItems } from './navigation';
 
 const API = 'http://localhost:3001/api';
 
@@ -11,7 +12,7 @@ export default function App() {
   const [permissions, setPermissions] = useState([]);
   const [error, setError] = useState('');
   const [login, setLogin] = useState({ username: 'admin', password: 'changeme' });
-  const [currentPage, setCurrentPage] = useState('dashboard');
+  const [currentPage, setCurrentPage] = useState('home');
   const [settingsMessage, setSettingsMessage] = useState('');
   const fileInputRef = useRef(null);
 
@@ -56,20 +57,20 @@ export default function App() {
     setToken(data.token);
     setUser(data.user);
     setPermissions(data.permissions || []);
+    setCurrentPage('home');
   };
 
   const logout = () => {
     localStorage.removeItem('token');
     setToken('');
     setUser(null);
+    setCurrentPage('home');
   };
 
-  // Settings Export/Import Functions
   const getAllSettings = () => {
     const settings = {};
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
-      // Don't export sensitive data like tokens
       if (key !== 'token') {
         settings[key] = localStorage.getItem(key);
       }
@@ -108,7 +109,6 @@ export default function App() {
           Object.entries(data.settings).forEach(([key, value]) => {
             localStorage.setItem(key, value);
           });
-          // Apply language setting if exists
           const savedLang = data.settings.lang;
           if (savedLang) {
             i18n.changeLanguage(savedLang);
@@ -127,7 +127,6 @@ export default function App() {
       }
     };
     reader.readAsText(file);
-    // Reset file input
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -137,20 +136,20 @@ export default function App() {
     <>
       <section className="card">
         <h2>{t('settingsPage')}</h2>
-        <button className="back-btn" onClick={() => setCurrentPage('dashboard')}>{t('back')}</button>
+        <button className="back-btn" onClick={() => setCurrentPage('home')}>{t('back')}</button>
       </section>
 
       <section className="card">
         <h3>{t('settingsBackup')}</h3>
         {settingsMessage && <p className="success-message">{settingsMessage}</p>}
-        
+
         <div className="settings-actions">
           <div className="settings-action">
             <h4>{t('exportSettings')}</h4>
             <p>{t('exportSettingsDesc')}</p>
             <button className="primary-btn" onClick={exportSettings}>{t('exportSettings')}</button>
           </div>
-          
+
           <div className="settings-action">
             <h4>{t('importSettings')}</h4>
             <p>{t('importSettingsDesc')}</p>
@@ -192,10 +191,10 @@ export default function App() {
     </>
   );
 
-  const renderDashboard = () => (
+  const renderHomePage = () => (
     <>
       <section className="card">
-        <h2>{t('dashboard')}</h2>
+        <h2>{t('home')}</h2>
         <p>{t('welcome')}: {user.full_name || user.username}</p>
         <p>{t('permissionsCount')}: {permissions.length}</p>
         <p>API: {health ? health.status : 'loading...'}</p>
@@ -207,11 +206,22 @@ export default function App() {
     </>
   );
 
+  const renderModulePage = () => {
+    const currentModule = getModuleById(currentPage);
+
+    return (
+      <section className="card">
+        <h2>{currentModule ? t(currentModule.labelKey) : t('home')}</h2>
+        <p>{t('modulePlaceholder')}</p>
+      </section>
+    );
+  };
+
   const renderAboutPage = () => (
     <>
       <section className="card">
         <h2>{t('aboutPage')}</h2>
-        <button className="back-btn" onClick={() => setCurrentPage('dashboard')}>{t('back')}</button>
+        <button className="back-btn" onClick={() => setCurrentPage('home')}>{t('back')}</button>
       </section>
 
       <section className="card about-card">
@@ -220,7 +230,7 @@ export default function App() {
           <h3>{t('aboutApp')}</h3>
         </div>
         <p className="about-desc">{t('aboutAppDesc')}</p>
-        
+
         <div className="about-info">
           <div className="info-item">
             <span className="info-label">{t('version')}:</span>
@@ -258,7 +268,7 @@ export default function App() {
         <h3>{t('contactInfo')}</h3>
         <div className="contact-info">
           <p>
-            <span className="info-label">{t('github')}:</span>
+            <span className="info-label">{t('github')}:</span>{' '}
             <a href="https://github.com/a1098990276-hue" target="_blank" rel="noopener noreferrer">
               github.com/a1098990276-hue
             </a>
@@ -274,20 +284,42 @@ export default function App() {
       <header className="topbar">
         <h1>{t('appTitle')}</h1>
         <div className="topbar-actions">
-          <button onClick={toggleLang}>{t('language')}</button>
           {user && <button onClick={logout}>{t('logout')}</button>}
         </div>
       </header>
-      <nav className="sidebar">
-        <button className={currentPage === 'dashboard' ? 'active' : ''} onClick={() => setCurrentPage('dashboard')}>{t('dashboard')}</button>
-        <button>{t('accounts')}</button>
-        <button>{t('products')}</button>
-        <button>{t('invoices')}</button>
-        <button>{t('journal')}</button>
-        <button>{t('reports')}</button>
-        <button className={currentPage === 'settings' ? 'active' : ''} onClick={() => setCurrentPage('settings')}>{t('settings')}</button>
-        <button className={currentPage === 'about' ? 'active' : ''} onClick={() => setCurrentPage('about')}>{t('about')}</button>
-      </nav>
+      <aside className="sidebar">
+        <nav className="sidebar-nav" aria-label={t('moduleNavigation')}>
+          {navigationItems.map((item) => (
+            <button
+              key={item.id}
+              className={currentPage === item.id ? 'active' : ''}
+              onClick={() => setCurrentPage(item.id)}
+            >
+              {t(item.labelKey)}
+            </button>
+          ))}
+        </nav>
+        <div className="sidebar-footer">
+          <div className="support-card">
+            <p>{t('supportPrompt')}</p>
+            <a className="support-link" href="https://www.whatsapp.com/" target="_blank" rel="noopener noreferrer">
+              {t('whatsApp')}
+            </a>
+          </div>
+          <div className="sidebar-utility">
+            {utilityItems.map((item) => (
+              <button
+                key={item.id}
+                className={currentPage === item.id ? 'active' : ''}
+                onClick={() => setCurrentPage(item.id)}
+              >
+                {t(item.labelKey)}
+              </button>
+            ))}
+            <button onClick={toggleLang}>{t(i18n.language === 'ar' ? 'switchToEnglish' : 'switchToArabic')}</button>
+          </div>
+        </div>
+      </aside>
       <main className="content">
         {!user && (
           <section className="card">
@@ -306,9 +338,10 @@ export default function App() {
             </form>
           </section>
         )}
-        {user && currentPage === 'dashboard' && renderDashboard()}
+        {user && currentPage === 'home' && renderHomePage()}
         {user && currentPage === 'settings' && renderSettingsPage()}
         {user && currentPage === 'about' && renderAboutPage()}
+        {user && !['home', 'settings', 'about'].includes(currentPage) && renderModulePage()}
       </main>
     </div>
   );
