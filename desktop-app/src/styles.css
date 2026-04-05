@@ -12,7 +12,7 @@ body {
   display: grid;
   grid-template-columns: 280px 1fr;
   grid-template-rows: 64px 1fr;
-  height: 100vh;
+  min-height: 100vh;
 }
 
 div.topbar {
@@ -35,6 +35,7 @@ div.topbar-actions {
   flex-direction: column;
   gap: 12px;
   min-height: 0;
+  max-height: calc(100vh - 64px);
   padding: 16px;
   background: #ffffff;
   border-inline-end: 1px solid #e5e7eb;
@@ -92,6 +93,10 @@ div.topbar-actions {
   background: #bbf7d0;
 }
 
+.support-link:disabled {
+  cursor: default;
+}
+
 .sidebar-utility {
   display: grid;
   gap: 8px;
@@ -99,6 +104,7 @@ div.topbar-actions {
 
 .content {
   min-height: 0;
+  max-height: calc(100vh - 64px);
   overflow-y: auto;
   padding: 24px;
   display: grid;

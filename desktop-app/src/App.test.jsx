@@ -55,7 +55,7 @@ describe('App Component', () => {
       render(<App />);
 
       expect(screen.getByText('For help and support 🦅')).toBeInTheDocument();
-      expect(screen.getByRole('link', { name: 'WhatsApp' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'WhatsApp' })).toBeDisabled();
       expect(screen.getByRole('button', { name: 'العربية' })).toBeInTheDocument();
     });
   });

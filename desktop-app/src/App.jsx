@@ -209,9 +209,11 @@ export default function App() {
   const renderModulePage = () => {
     const currentModule = getModuleById(currentPage);
 
+    if (!currentModule) return null;
+
     return (
       <section className="card">
-        <h2>{currentModule ? t(currentModule.labelKey) : t('home')}</h2>
+        <h2>{t(currentModule.labelKey)}</h2>
         <p>{t('modulePlaceholder')}</p>
       </section>
     );
@@ -302,9 +304,7 @@ export default function App() {
         <div className="sidebar-footer">
           <div className="support-card">
             <p>{t('supportPrompt')}</p>
-            <a className="support-link" href="https://www.whatsapp.com/" target="_blank" rel="noopener noreferrer">
-              {t('whatsApp')}
-            </a>
+            <button type="button" className="support-link" disabled>{t('whatsApp')}</button>
           </div>
           <div className="sidebar-utility">
             {utilityItems.map((item) => (
