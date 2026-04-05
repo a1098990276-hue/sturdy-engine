@@ -1,13 +1,6 @@
-// Electron preload script
+const { contextBridge } = require('electron');
 
-// Expose a method to the renderer process
-window.api = {
-    // Method to load data
-    loadData: async () => {
-        // Implementation here
-    },
-    // Method to save data
-    saveData: async (data) => {
-        // Implementation here
-    }
-};
+contextBridge.exposeInMainWorld('api', {
+  loadData: async () => undefined,
+  saveData: async () => undefined
+});
