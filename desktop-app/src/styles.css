@@ -10,7 +10,7 @@ body {
 
 .app {
   display: grid;
-  grid-template-columns: 240px 1fr;
+  grid-template-columns: 280px 1fr;
   grid-template-rows: 64px 1fr;
   min-height: 100vh;
 }
@@ -33,22 +33,79 @@ div.topbar-actions {
 .sidebar {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
+  min-height: 0;
+  max-height: calc(100vh - 64px);
   padding: 16px;
   background: #ffffff;
-  border-right: 1px solid #e5e7eb;
+  border-inline-end: 1px solid #e5e7eb;
 }
 
-.sidebar button {
+.sidebar-nav {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.sidebar button,
+.support-link {
   padding: 10px 12px;
   border: none;
   background: #f3f4f6;
   border-radius: 8px;
   text-align: start;
   cursor: pointer;
+  color: inherit;
+  font: inherit;
+  text-decoration: none;
+}
+
+.sidebar-footer {
+  display: grid;
+  gap: 12px;
+}
+
+.support-card {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.support-card p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.support-link {
+  display: inline-flex;
+  justify-content: center;
+  background: #dcfce7;
+  color: #166534;
+}
+
+.support-link:hover {
+  background: #bbf7d0;
+}
+
+.support-link:disabled {
+  cursor: default;
+}
+
+.sidebar-utility {
+  display: grid;
+  gap: 8px;
 }
 
 .content {
+  min-height: 0;
+  max-height: calc(100vh - 64px);
+  overflow-y: auto;
   padding: 24px;
   display: grid;
   gap: 16px;
@@ -58,7 +115,7 @@ div.topbar-actions {
   background: white;
   border-radius: 12px;
   padding: 16px;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .login-form {
@@ -82,7 +139,6 @@ div.topbar-actions {
   color: #b91c1c;
 }
 
-/* Settings Page Styles */
 .settings-actions {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -164,13 +220,11 @@ div.topbar-actions {
   margin-top: 12px;
 }
 
-/* Sidebar Active State */
 .sidebar button.active {
   background: #2563eb;
   color: white;
 }
 
-/* About Page Styles */
 .about-card {
   text-align: center;
 }
@@ -258,12 +312,4 @@ div.topbar-actions {
 
 .contact-info a:hover {
   text-decoration: underline;
-}
-
-.copyright {
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid #e5e7eb;
-  color: #6b7280;
-  font-size: 13px;
 }

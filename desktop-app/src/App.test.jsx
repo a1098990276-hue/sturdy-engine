@@ -1,33 +1,13 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import enTranslations from './locales/en.json';
+import { navigationItems } from './navigation';
 import App from './App';
 
-// Mock i18next
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key) => {
-      const translations = {
-        appTitle: 'SAQR Accounting System',
-        dashboard: 'Dashboard',
-        accounts: 'Chart of Accounts',
-        products: 'Products',
-        invoices: 'Invoices',
-        journal: 'Journal Entries',
-        reports: 'Reports',
-        settings: 'Settings',
-        language: 'Language',
-        login: 'Login',
-        logout: 'Logout',
-        username: 'Username',
-        password: 'Password',
-        welcome: 'Welcome',
-        permissionsCount: 'Permissions count',
-        quickStart: 'Quick Start',
-        quickStartDesc: 'You can now manage accounts, inventory, invoices, journal entries, and reports through the system APIs.'
-      };
-      return translations[key] || key;
-    },
+    t: (key) => enTranslations[key] || key,
     i18n: {
       language: 'en',
       changeLanguage: vi.fn()
@@ -48,34 +28,35 @@ describe('App Component', () => {
       });
 
       render(<App />);
-      
+
       expect(screen.getByText('SAQR Accounting System')).toBeInTheDocument();
     });
 
-    it('renders navigation sidebar with all menu items', async () => {
+    it('renders navigation sidebar with the expanded module list', async () => {
       global.fetch = vi.fn().mockResolvedValue({
         json: () => Promise.resolve({ status: 'healthy' })
       });
 
       render(<App />);
-      
-      expect(screen.getByRole('button', { name: 'Dashboard' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'Chart of Accounts' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'Products' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'Invoices' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'Journal Entries' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'Reports' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'Settings' })).toBeInTheDocument();
+
+      const sidebarNav = screen.getByRole('navigation', { name: 'Module Navigation' });
+      expect(within(sidebarNav).getAllByRole('button')).toHaveLength(navigationItems.length);
+      expect(within(sidebarNav).getByRole('button', { name: 'Home' })).toBeInTheDocument();
+      expect(within(sidebarNav).getByRole('button', { name: 'Chart of Accounts' })).toBeInTheDocument();
+      expect(within(sidebarNav).getByRole('button', { name: 'Products' })).toBeInTheDocument();
+      expect(within(sidebarNav).getByRole('button', { name: 'System License' })).toBeInTheDocument();
     });
 
-    it('renders language toggle button', async () => {
+    it('renders support and language controls', async () => {
       global.fetch = vi.fn().mockResolvedValue({
         json: () => Promise.resolve({ status: 'healthy' })
       });
 
       render(<App />);
-      
-      expect(screen.getByRole('button', { name: 'Language' })).toBeInTheDocument();
+
+      expect(screen.getByText('For help and support 🦅')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'WhatsApp' })).toBeDisabled();
+      expect(screen.getByRole('button', { name: 'العربية' })).toBeInTheDocument();
     });
   });
 
@@ -88,7 +69,7 @@ describe('App Component', () => {
 
     it('renders login form when user is not authenticated', () => {
       render(<App />);
-      
+
       expect(screen.getByText('Username')).toBeInTheDocument();
       expect(screen.getByText('Password')).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Login' })).toBeInTheDocument();
@@ -96,29 +77,29 @@ describe('App Component', () => {
 
     it('has default username and password values', () => {
       render(<App />);
-      
+
       const usernameInput = screen.getByDisplayValue('admin');
       const passwordInput = screen.getByDisplayValue('changeme');
-      
+
       expect(usernameInput).toBeInTheDocument();
       expect(passwordInput).toBeInTheDocument();
     });
 
     it('allows typing in username field', () => {
       render(<App />);
-      
+
       const usernameInput = screen.getByDisplayValue('admin');
       fireEvent.change(usernameInput, { target: { value: 'newuser' } });
-      
+
       expect(screen.getByDisplayValue('newuser')).toBeInTheDocument();
     });
 
     it('allows typing in password field', () => {
       render(<App />);
-      
+
       const passwordInput = screen.getByDisplayValue('changeme');
       fireEvent.change(passwordInput, { target: { value: 'newpassword' } });
-      
+
       expect(screen.getByDisplayValue('newpassword')).toBeInTheDocument();
     });
 
@@ -140,7 +121,7 @@ describe('App Component', () => {
         });
 
       render(<App />);
-      
+
       const loginButton = screen.getByRole('button', { name: 'Login' });
       fireEvent.click(loginButton);
 
@@ -157,7 +138,7 @@ describe('App Component', () => {
         });
 
       render(<App />);
-      
+
       const loginButton = screen.getByRole('button', { name: 'Login' });
       fireEvent.click(loginButton);
 
@@ -168,7 +149,7 @@ describe('App Component', () => {
   });
 
   describe('Authenticated User View', () => {
-    it('shows dashboard after successful login', async () => {
+    it('shows home after successful login', async () => {
       global.fetch = vi.fn()
         .mockResolvedValueOnce({ json: () => Promise.resolve({ status: 'healthy' }) })
         .mockResolvedValueOnce({
@@ -186,7 +167,7 @@ describe('App Component', () => {
         });
 
       render(<App />);
-      
+
       fireEvent.click(screen.getByRole('button', { name: 'Login' }));
 
       await waitFor(() => {
@@ -212,7 +193,7 @@ describe('App Component', () => {
         });
 
       render(<App />);
-      
+
       fireEvent.click(screen.getByRole('button', { name: 'Login' }));
 
       await waitFor(() => {
@@ -238,7 +219,7 @@ describe('App Component', () => {
         });
 
       render(<App />);
-      
+
       fireEvent.click(screen.getByRole('button', { name: 'Login' }));
 
       await waitFor(() => {
@@ -271,12 +252,42 @@ describe('App Component', () => {
         });
 
       render(<App />);
-      
+
       fireEvent.click(screen.getByRole('button', { name: 'Login' }));
 
       await waitFor(() => {
         expect(screen.getByText('Quick Start')).toBeInTheDocument();
       });
+    });
+
+    it('shows a placeholder when a module is selected', async () => {
+      global.fetch = vi.fn()
+        .mockResolvedValueOnce({ json: () => Promise.resolve({ status: 'healthy' }) })
+        .mockResolvedValueOnce({
+          json: () => Promise.resolve({
+            token: 'test-token',
+            user: { username: 'admin' },
+            permissions: []
+          })
+        })
+        .mockResolvedValue({
+          json: () => Promise.resolve({
+            user: { username: 'admin' },
+            permissions: []
+          })
+        });
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button', { name: 'Login' }));
+
+      await waitFor(() => {
+        expect(screen.getByText('Quick Start')).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: 'Partners' }));
+      expect(screen.getByRole('heading', { name: 'Partners' })).toBeInTheDocument();
+      expect(screen.getByText('This module is available in the navigation list and can be connected to its dedicated workflow next.')).toBeInTheDocument();
     });
   });
 
@@ -299,7 +310,7 @@ describe('App Component', () => {
         });
 
       render(<App />);
-      
+
       fireEvent.click(screen.getByRole('button', { name: 'Login' }));
 
       await waitFor(() => {
@@ -325,7 +336,7 @@ describe('App Component', () => {
         });
 
       render(<App />);
-      
+
       fireEvent.click(screen.getByRole('button', { name: 'Login' }));
 
       await waitFor(() => {
@@ -335,33 +346,21 @@ describe('App Component', () => {
   });
 
   describe('Language Toggle', () => {
-    it('calls changeLanguage when language button is clicked', async () => {
-      const changeLanguageMock = vi.fn();
-      vi.doMock('react-i18next', () => ({
-        useTranslation: () => ({
-          t: (key) => key,
-          i18n: {
-            language: 'en',
-            changeLanguage: changeLanguageMock
-          }
-        })
-      }));
-
+    it('renders the language switch button', async () => {
       global.fetch = vi.fn().mockResolvedValue({
         json: () => Promise.resolve({ status: 'healthy' })
       });
 
       render(<App />);
-      
-      const languageButton = screen.getByRole('button', { name: 'Language' });
-      expect(languageButton).toBeInTheDocument();
+
+      expect(screen.getByRole('button', { name: 'العربية' })).toBeInTheDocument();
     });
   });
 
   describe('Persisted Token', () => {
     it('fetches user data when token exists in localStorage', async () => {
       localStorage.setItem('token', 'existing-token');
-      
+
       global.fetch = vi.fn()
         .mockResolvedValueOnce({ json: () => Promise.resolve({ status: 'healthy' }) })
         .mockResolvedValueOnce({
@@ -383,9 +382,9 @@ describe('App Component', () => {
       });
     });
 
-    it('shows dashboard when token is valid', async () => {
+    it('shows home when token is valid', async () => {
       localStorage.setItem('token', 'valid-token');
-      
+
       global.fetch = vi.fn()
         .mockResolvedValueOnce({ json: () => Promise.resolve({ status: 'healthy' }) })
         .mockResolvedValueOnce({
@@ -422,7 +421,7 @@ describe('App Component', () => {
         });
 
       render(<App />);
-      
+
       fireEvent.click(screen.getByRole('button', { name: 'Login' }));
 
       await waitFor(() => {
@@ -448,7 +447,7 @@ describe('App Component', () => {
         });
 
       render(<App />);
-      
+
       fireEvent.click(screen.getByRole('button', { name: 'Login' }));
 
       await waitFor(() => {
