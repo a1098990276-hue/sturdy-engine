@@ -49,3 +49,9 @@ qtcreator-*
 
 # Catkin custom files
 CATKIN_IGNORE
+
+# Node / Electron app artifacts
+desktop-app/node_modules/
+desktop-app/dist/
+desktop-app/.vite/
+desktop-app/out/

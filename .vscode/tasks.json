@@ -3,11 +3,11 @@
 	"tasks": [
 		{
 			"type": "npm",
-			"script": "dev",
+			"script": "start",
 			"path": "desktop-app",
 			"problemMatcher": [],
-			"label": "npm: dev - desktop-app",
-			"detail": "concurrently -k \"vite\" \"wait-on tcp:5173 && electron .\" \"node server/index.js\""
+			"label": "npm: start - desktop-app",
+			"detail": "electron-forge start"
 		}
 	]
 }
