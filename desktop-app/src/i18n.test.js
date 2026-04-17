@@ -1,13 +1,14 @@
 import { describe, it, expect } from 'vitest';
 import arTranslations from './locales/ar.json';
 import enTranslations from './locales/en.json';
+import { navigationItems, utilityItems } from './navigation';
 
 describe('i18n Translations', () => {
   describe('Translation Keys Consistency', () => {
     it('should have the same keys in both Arabic and English translations', () => {
       const arKeys = Object.keys(arTranslations).sort();
       const enKeys = Object.keys(enTranslations).sort();
-      
+
       expect(arKeys).toEqual(enKeys);
     });
 
@@ -29,14 +30,19 @@ describe('i18n Translations', () => {
   describe('Required Translation Keys', () => {
     const requiredKeys = [
       'appTitle',
+      'moduleNavigation',
+      'home',
       'dashboard',
       'accounts',
       'products',
-      'invoices',
-      'journal',
       'reports',
       'settings',
       'language',
+      'switchToEnglish',
+      'switchToArabic',
+      'supportPrompt',
+      'whatsApp',
+      'modulePlaceholder',
       'login',
       'logout',
       'username',
@@ -62,10 +68,9 @@ describe('i18n Translations', () => {
     });
 
     it('should have Arabic RTL content indicators', () => {
-      // Arabic text should contain Arabic characters (Unicode range)
       const arabicRegex = /[\u0600-\u06FF]/;
-      const allowedNonArabicKeys = ['developerName', 'github', 'licenseType', 'technologies'];
-      
+      const allowedNonArabicKeys = ['developerName', 'github', 'licenseType', 'technologies', 'switchToEnglish'];
+
       Object.entries(arTranslations).forEach(([key, value]) => {
         if (allowedNonArabicKeys.includes(key)) {
           return;
@@ -82,10 +87,14 @@ describe('i18n Translations', () => {
     });
 
     it('should have proper English content', () => {
-      // English should not contain Arabic characters
       const arabicRegex = /[\u0600-\u06FF]/;
-      
+      const allowedArabicKeys = ['switchToArabic'];
+
       Object.entries(enTranslations).forEach(([key, value]) => {
+        if (allowedArabicKeys.includes(key)) {
+          return;
+        }
+
         expect(arabicRegex.test(value), `'${key}' should not contain Arabic characters`).toBe(false);
       });
     });
@@ -97,19 +106,17 @@ describe('i18n Translations', () => {
       expect(Object.keys(enTranslations).length).toBeGreaterThanOrEqual(15);
     });
 
-    it('should have all navigation keys', () => {
-      const navigationKeys = ['dashboard', 'accounts', 'products', 'invoices', 'journal', 'reports', 'settings'];
-      
-      navigationKeys.forEach(key => {
-        expect(arTranslations).toHaveProperty(key);
-        expect(enTranslations).toHaveProperty(key);
+    it('should have all navigation and utility keys', () => {
+      [...navigationItems, ...utilityItems].forEach(({ labelKey }) => {
+        expect(arTranslations).toHaveProperty(labelKey);
+        expect(enTranslations).toHaveProperty(labelKey);
       });
     });
 
     it('should have all authentication keys', () => {
       const authKeys = ['login', 'logout', 'username', 'password'];
-      
-      authKeys.forEach(key => {
+
+      authKeys.forEach((key) => {
         expect(arTranslations).toHaveProperty(key);
         expect(enTranslations).toHaveProperty(key);
       });
